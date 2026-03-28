@@ -19,7 +19,10 @@
       border-radius: 50%;
       cursor: pointer;
     }
+    .R5 { background: purple; }
     .R4 { background: red; }
+    .R3 { background: yellow; }
+    .R2 { background: green; }
     .R1 { background: blue; }
   </style>
 </head>
@@ -55,6 +58,11 @@ fetch(sheetURL)
     const castles = parseCSV(data);
     castles.forEach(addCastle);
   });
+
+document.getElementById("map").addEventListener("click", function(e) {
+  alert(`X: ${e.offsetX}, Y: ${e.offsetY}`);
+});
+  
 </script>
 
 </body>
