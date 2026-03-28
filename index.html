@@ -4,7 +4,8 @@
   <title>Kingshot Map</title>
   <meta charset="utf-8" />
   <style>
-    body { margin: 0; }
+    body { margin: 0; overflow: hidden; }
+
     #map {
       width: 100vw;
       height: 100vh;
@@ -12,18 +13,32 @@
       background-size: contain;
       position: relative;
     }
+
     .castle {
       position: absolute;
-      width: 12px;
-      height: 12px;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
+      border: 2px solid black;
       cursor: pointer;
+      transform: translate(-50%, -50%);
     }
-    .R5 { background: purple; }
-    .R4 { background: red; }
-    .R3 { background: yellow; }
-    .R2 { background: green; }
+
+    /* Alliance colors */
     .R1 { background: blue; }
+    .R2 { background: green; }
+    .R3 { background: yellow; }
+    .R4 { background: red; }
+    .R5 { background: purple; }
+
+    .label {
+      position: absolute;
+      font-size: 10px;
+      color: white;
+      pointer-events: none;
+      text-shadow: 1px 1px 2px black;
+      transform: translate(5px, -5px);
+    }
   </style>
 </head>
 <body>
@@ -33,25 +48,28 @@
 <script>
 const sheetURL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS1uFnfX-niR-VVVPgC7CZBoNQ7T46EuuSSdia_Uzt3chOjbWgUYkJrHdwdkBtrpM8o8EY2NI_AyhYv/pub?output=csv";
 
+// Parse CSV
 function parseCSV(text) {
   const rows = text.trim().split("\n").slice(1);
   return rows.map(r => {
     const [id, name, x, y, alliance, power, lastUpdated] = r.split(",");
-    return { id, name, x: +x, y: +y, alliance, power, lastUpdated };
+    return {
+      id,
+      name,
+      x: +x,
+      y: +y,
+      alliance,
+      power,
+      lastUpdated
+    };
   });
 }
 
+// Add castle to map
 function addCastle(castle) {
-  const label = document.createElement("div");
-  label.innerText = castle.name;
-  label.style.position = "absolute";
-  label.style.left = (castle.x + 10) + "px";
-  label.style.top = (castle.y - 5) + "px";
-  label.style.fontSize = "10px";
-  label.style.color = "white";
-  
-  document.getElementById("map").appendChild(label);
-  
+  const map = document.getElementById("map");
+
+  // Castle dot
   const el = document.createElement("div");
   el.className = "castle " + castle.alliance;
   el.style.left = castle.x + "px";
@@ -66,20 +84,34 @@ Last Updated: ${castle.lastUpdated}`
     );
   });
 
-  document.getElementById("map").appendChild(el);
+  map.appendChild(el);
+
+  // Label
+  const label = document.createElement("div");
+  label.className = "label";
+  label.innerText = castle.name;
+  label.style.left = castle.x + "px";
+  label.style.top = castle.y + "px";
+
+  map.appendChild(label);
 }
 
+// Load data
 fetch(sheetURL)
   .then(res => res.text())
   .then(data => {
+    console.log("CSV:", data);
+
     const castles = parseCSV(data);
+    console.log("Parsed:", castles);
+
     castles.forEach(addCastle);
   });
 
+// Click map to get coordinates
 document.getElementById("map").addEventListener("click", function(e) {
   alert(`X: ${e.offsetX}, Y: ${e.offsetY}`);
 });
-  
 </script>
 
 </body>
