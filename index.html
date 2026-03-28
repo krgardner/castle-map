@@ -42,12 +42,29 @@ function parseCSV(text) {
 }
 
 function addCastle(castle) {
+  const label = document.createElement("div");
+  label.innerText = castle.name;
+  label.style.position = "absolute";
+  label.style.left = (castle.x + 10) + "px";
+  label.style.top = (castle.y - 5) + "px";
+  label.style.fontSize = "10px";
+  label.style.color = "white";
+  
+  document.getElementById("map").appendChild(label);
+  
   const el = document.createElement("div");
   el.className = "castle " + castle.alliance;
   el.style.left = castle.x + "px";
   el.style.top = castle.y + "px";
 
-  el.title = `${castle.name}\nPower: ${castle.power}`;
+  el.addEventListener("click", () => {
+    alert(
+      `${castle.name}
+Alliance: ${castle.alliance}
+Power: ${castle.power}
+Last Updated: ${castle.lastUpdated}`
+    );
+  });
 
   document.getElementById("map").appendChild(el);
 }
