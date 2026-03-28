@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kingshot Map</title>
+  <meta charset="utf-8" />
+  <style>
+    body { margin: 0; }
+    #map {
+      width: 100vw;
+      height: 100vh;
+      background: url('map.png') no-repeat center;
+      background-size: contain;
+      position: relative;
+    }
+    .castle {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .R4 { background: red; }
+    .R1 { background: blue; }
+  </style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script>
+const sheetURL = "PASTE_YOUR_CSV_URL_HERE";
+
+function parseCSV(text) {
+  const rows = text.trim().split("\n").slice(1);
+  return rows.map(r => {
+    const [id, name, x, y, alliance, power, lastUpdated] = r.split(",");
+    return { id, name, x: +x, y: +y, alliance, power, lastUpdated };
+  });
+}
+
+function addCastle(castle) {
+  const el = document.createElement("div");
+  el.className = "castle " + castle.alliance;
+  el.style.left = castle.x + "px";
+  el.style.top = castle.y + "px";
+
+  el.title = `${castle.name}\nPower: ${castle.power}`;
+
+  document.getElementById("map").appendChild(el);
+}
+
+fetch(sheetURL)
+  .then(res => res.text())
+  .then(data => {
+    const castles = parseCSV(data);
+    castles.forEach(addCastle);
+  });
+</script>
+
+</body>
+</html>
